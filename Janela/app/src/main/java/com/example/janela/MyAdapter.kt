@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
@@ -30,9 +29,8 @@ class MyAdapter(val lista: MutableList<String>): RecyclerView.Adapter<MyAdapter.
         this.notifyItemInserted(this.lista.size)
     }
 
-    fun del(position: Int){
+    fun delet(position: Int) {
         this.lista.removeAt(position)
-        notifyItemRemoved(position)
         notifyItemRangeChanged(position, this.lista.size)
     }
 
@@ -46,9 +44,9 @@ class MyAdapter(val lista: MutableList<String>): RecyclerView.Adapter<MyAdapter.
 
         init {
             this.tvNome = itemView.findViewById(R.id.tvItemNome)
-            itemView.setOnClickListener({
+            itemView.setOnClickListener {
                 this@MyAdapter.onItemClickRecyclerView?.onItemClick(this.adapterPosition)
-            })
+            }
         }
     }
 }

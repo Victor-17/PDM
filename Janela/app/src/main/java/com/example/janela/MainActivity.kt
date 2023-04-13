@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var rvNomes: RecyclerView
@@ -18,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private var lista = mutableListOf<String>()
     private lateinit var etNome: EditText
     private lateinit var tts: TextToSpeech
-
+    private var posicao: Int = 0
     init {
         this.lista.add("Flávia")
         this.lista.add("José")
@@ -40,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         this.tts = TextToSpeech(this, null)
 
+        //configuração de movimentação dos objetos na tela
         ItemTouchHelper(OnSwipe()).attachToRecyclerView(this.rvNomes)
     }
 
@@ -55,22 +55,11 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    inner class OnSwipe: ItemTouchHelper.SimpleCallback(
-        ItemTouchHelper.DOWN or ItemTouchHelper.UP,
-        ItemTouchHelper.START or ItemTouchHelper.END){
-
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            return true
+    inner class OnClickDelete: OnClickListener{
+        override fun onClick(dialog: DialogInterface?, which: Int) {
+            (this@MainActivity.rvNomes.adapter as MyAdapter).delet(posicao)
+            (this@MainActivity.rvNomes.adapter as MyAdapter).notifyDataSetChanged()
         }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            TODO("Not yet implemented")
-        }
-
     }
 
     inner class OnClick: OnClickListener{
@@ -86,5 +75,28 @@ class MainActivity : AppCompatActivity() {
 //            Toast.makeText(this@MainActivity, nome, Toast.LENGTH_SHORT).show()
             this@MainActivity.tts.speak(nome, TextToSpeech.QUEUE_FLUSH, null, null)
         }
+    }
+
+    // mover os objetos na tela
+    inner class OnSwipe: ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.DOWN or ItemTouchHelper.UP,
+        ItemTouchHelper.START or ItemTouchHelper.END){
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            //Acessar fun move() do MyAdapter
+            (this@MainActivity.rvNomes.adapter as MyAdapter).mov(
+                viewHolder.adapterPosition, target.adapterPosition)
+            return true
+        }
+
+        // deletar o objeto ao deslizar para direita ou esquerda
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            OnClickDelete()
+        }
+
     }
 }
